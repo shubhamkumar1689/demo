@@ -1,0 +1,248 @@
+import { Component, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
+import { chart } from 'highcharts';
+
+import Highcharts from 'highcharts/highmaps';
+import worldMap from '@highcharts/map-collection/custom/world-continents.geo.json';
+//import { __values } from 'tslib';
+
+@Component({
+  selector: 'my-app',
+  templateUrl: './app.component.html',
+  styleUrls: ['./app.component.css'],
+})
+export class AppComponent {
+  public isHidden = false;
+  // @ViewChild('chartTarget') chartTarget: ElementRef;
+  @ViewChild('chartTarget2') chartTarget2: ElementRef;
+
+  chart: Highcharts.Chart;
+  chart2: Highcharts.Chart;
+
+  public options: any = {
+    chart: {
+      plotBackgroundColor: null,
+      plotBorderWidth: null,
+      plotShadow: true,
+      type: 'pie',
+      style: {
+        width: 100,
+        height: 100,
+      },
+    },
+    title: {
+      text: '',
+    },
+
+    accessibility: {
+      point: {
+        valueSuffix: '%',
+      },
+    },
+    plotOptions: {
+      pie: {
+        allowPointSelect: false,
+        cursor: 'pointer',
+        dataLabels: {
+          enabled: false,
+          format: '{point.name}: {point.percentage:.1f} %',
+        },
+      },
+    },
+    series: [
+      {
+        name: '',
+        colorByPoint: true,
+        innerSize: '60%',
+        data: [
+          {
+            name: 'Chrome',
+            y: 59.41,
+            sliced: true,
+            selected: true,
+          },
+          {
+            name: 'Internet Explorer',
+            y: 11.84,
+          },
+          {
+            name: 'Firefox',
+            y: 11.85,
+          },
+          {
+            name: 'Edge',
+            y: 4.67,
+          },
+          {
+            name: 'Safari',
+            y: 5.18,
+          },
+          {
+            name: 'Sogou Explorer',
+            y: 1.64,
+          },
+          {
+            name: 'Opera',
+            y: 1.6,
+          },
+          {
+            name: 'QQ',
+            y: 1.2,
+          },
+          {
+            name: 'Other',
+            y: 2.61,
+          },
+        ],
+      },
+    ],
+  };
+
+  Highcharts: typeof Highcharts = Highcharts;
+  chartConstructor = 'mapChart';
+  chartData = [
+    { code3: 'ABW', z: 105 },
+    { code3: 'AFG', z: 35530 },
+  ];
+
+  chartOptions: Highcharts.Options = {
+    chart: {
+      map: worldMap,
+    },
+    title: {
+      text: 'Highmaps basic demo',
+    },
+    subtitle: {
+      text: 'Source map: <a href="http://code.highcharts.com/mapdata/custom/world.js">World, Miller projection, medium resolution</a>',
+    },
+    mapNavigation: {
+      enabled: false,
+      buttonOptions: {
+        alignTo: 'spacingBox',
+      },
+    },
+    tooltip: {
+      useHTML: true,
+      padding: -8,
+      style: {
+        pointerEvents: 'auto',
+      },
+      formatter: function () {
+        if (
+          this.point.name === 'North America' ||
+          this.point.name === 'Europe' ||
+          this.point.name === 'Asia'
+        ) {
+          (async () => {
+            var res = await my(this.point.name);
+
+            setTimeout(function () {
+              // console.log(this.name);
+              Highcharts.chart('chart', {
+                chart: {
+                  //renderTo: "chart"
+                },
+                title: {
+                  text: '',
+                },
+                series: [
+                  {
+                    type: 'pie',
+                    innerSize: '60%',
+                    data: [
+                      {
+                        name: 'Success',
+                        y: res.Success,
+                        color: '#00cc00',
+                      },
+                      {
+                        name: 'Failed',
+                        y: res.Failed,
+                        color: 'red',
+                      },
+                    ],
+                  },
+                ],
+              });
+            }, 40);
+          })();
+          return '<div id="chart" style="width: 200px; height: 150px;"></div>';
+
+          async function my(name) {
+            var myJson = null;
+            if (name === 'North America') {
+              const response = await fetch(
+                'https://mocki.io/v1/abbd6e41-e297-488a-89af-3bd1cac9c30d'
+              );
+              myJson = await response.json();
+            }
+            if (name === 'Europe') {
+              const response = await fetch(
+                'https://mocki.io/v1/c0b164c6-6f68-4509-b1d7-24fcccf6d6a5'
+              );
+              myJson = await response.json();
+            }
+            if (name === 'Asia') {
+              const response = await fetch(
+                'https://mocki.io/v1/c0b164c6-6f68-4509-b1d7-24fcccf6d6a5'
+              );
+              myJson = await response.json();
+            }
+            console.log(myJson);
+            return myJson;
+          }
+        } else {
+          return false;
+        }
+      },
+    },
+    legend: {
+      enabled: true,
+    },
+    colorAxis: {
+      min: 0,
+    },
+    plotOptions: {
+      series: {
+        point: {
+          events: {
+            mouseOver: function () {
+              //this.myFunc();
+            }.bind(this),
+            mouseOut: function () {
+              this.isOut();
+            }.bind(this),
+          },
+        },
+      },
+    },
+    series: [
+      {
+        type: 'map',
+        name: 'Random data',
+
+        dataLabels: {
+          enabled: true,
+          format: '{point.name}',
+        },
+        allAreas: true,
+        data: [
+          ['eu', 0],
+          ['oc', 1],
+          ['na', 2],
+          ['as', 3],
+          ['af', 4],
+          ['sa', 5],
+        ],
+      },
+    ],
+  };
+
+  myFunc() {
+    this.isHidden = true;
+    //Highcharts.chart('container',this.options);
+    chart(this.chartTarget2.nativeElement, this.options);
+  }
+  isOut() {
+    this.isHidden = false;
+  }
+}
