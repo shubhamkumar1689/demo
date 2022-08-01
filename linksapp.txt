@@ -18,3 +18,9 @@ forum
 how to show graph inside tooltip highcharts angular
 
 search
+s
+e
+a
+r
+c
+h

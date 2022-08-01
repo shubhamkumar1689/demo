@@ -11,4 +11,6 @@
 </div>-->
 <div style="position:fixed; top:10px; width:100px; height:100px;">
 <div #chartTarget2 *ngIf="isHidden" id="container"></div>
-</div>
+</div>>
+>>>
+...
